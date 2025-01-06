@@ -4,7 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'controller/theme_controller.dart';
 import 'models/task_model.dart';
-import 'screen/task_list_screen.dart';
+import 'screen/splash/splash_screen.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         darkTheme: ThemeData.dark(),
         themeMode:
             themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
-        home: TaskListScreen(),
+        home: const SplashScreen(),
       );
     });
   }

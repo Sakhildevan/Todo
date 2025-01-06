@@ -14,27 +14,32 @@ class TaskModel {
   final String category;
 
   @HiveField(3)
-  final String status;
+  late final String status;
+
+  @HiveField(4)
+  final int id; // Add an id field for uniqueness
 
   TaskModel({
     required this.title,
     required this.description,
     required this.category,
-    required this.status,
+    this.status = 'Pending',
+    required this.id, // Make sure to initialize the id
   });
 
-  // Add the copyWith method
   TaskModel copyWith({
     String? title,
     String? description,
     String? category,
     String? status,
+    int? id, // Include id in the copyWith method
   }) {
     return TaskModel(
       title: title ?? this.title,
       description: description ?? this.description,
       category: category ?? this.category,
       status: status ?? this.status,
+      id: id ?? this.id, // Copy the id
     );
   }
 }

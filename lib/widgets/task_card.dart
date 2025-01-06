@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+import 'package:todo/utils/styles/app_colors.dart';
 
 import '../controller/task_controller.dart';
 import '../models/task_model.dart';
@@ -12,35 +14,80 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dismissible(
-      key: ValueKey(task.title),
-      background: Container(
-        color: Colors.green,
-        alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.only(left: 20),
-        child: const Icon(Icons.check, color: Colors.white),
-      ),
-      secondaryBackground: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      onDismissed: (direction) {
-        if (direction == DismissDirection.startToEnd) {
-          controller.markAsComplete(task);
-        } else {
-          controller.deleteTask(task);
-        }
-      },
-      child: ListTile(
-        title: Text(task.title),
-        subtitle: Text(
-          task.description,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+    return Slidable(
+        key: ValueKey(task.title),
+        startActionPane: ActionPane(
+          motion: const DrawerMotion(),
+          dismissible: DismissiblePane(onDismissed: () {}),
+          children: [
+            // Left slide action: Mark as Complete
+            SlidableAction(
+              onPressed: (context) {
+                controller.markAsComplete(task);
+              },
+              backgroundColor: Colors.green,
+              icon: Icons.check,
+              label: 'Complete',
+            ),
+          ],
         ),
-        trailing: Text(task.status),
+        endActionPane: ActionPane(
+          motion: const DrawerMotion(),
+          dismissible: DismissiblePane(onDismissed: () {}),
+          children: [
+            // Right slide action: Delete task
+            SlidableAction(
+              onPressed: (context) {
+                _deleteTaskWithUndo(context);
+              },
+              backgroundColor: Colors.red,
+              icon: Icons.delete,
+              label: 'Delete',
+            ),
+          ],
+        ),
+        // actionPane: SlidableDrawerActionPane(),
+        child: ListTile(
+          title: Text(task.title.toUpperCase()),
+          subtitle: Text(
+            task.description,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          trailing: SizedBox(
+            width: 110,
+            child: Chip(
+              label: Text(
+                task.status,
+                style: const TextStyle(color: Colors.white), // Text color
+              ),
+              backgroundColor: task.status == 'Completed'
+                  ? AppColors.greenColor
+                  : AppColors.yellowColor,
+            ),
+          ),
+        ));
+  }
+
+  void _deleteTaskWithUndo(BuildContext context) {
+    // Save the task to a variable before deletion to allow undo
+    final deletedTask = task;
+
+    // Delete the task
+    controller.deleteTask(task);
+
+    // Show SnackBar with Undo option
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Task deleted'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            // Undo the deletion by adding the task back
+            controller.addTask(deletedTask);
+          },
+        ),
+        duration: const Duration(seconds: 3),
       ),
     );
   }

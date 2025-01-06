@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../controller/task_controller.dart';
 import '../models/task_model.dart';
+import '../utils/widget/animated_button.dart';
 
 class AddTaskScreen extends StatelessWidget {
   final TaskController controller = Get.find();
@@ -30,9 +31,8 @@ class AddTaskScreen extends StatelessWidget {
                 validator: (value) =>
                     value == null || value.isEmpty ? 'Title is required' : null,
               ),
-              TextFormField(
-                controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+              const SizedBox(
+                height: 15,
               ),
               DropdownButtonFormField(
                 items: categories
@@ -47,21 +47,38 @@ class AddTaskScreen extends StatelessWidget {
                 decoration: const InputDecoration(labelText: 'Category'),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
+              Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Colors.black38,
+                    )),
+                child: TextFormField(
+                  minLines: 5,
+                  maxLines: 10,
+                  controller: descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description'),
+                ),
+              ),
+              const SizedBox(height: 20),
+              CustomAnimatedButton(
+                onTap: () {
                   if (_formKey.currentState!.validate()) {
                     final task = TaskModel(
+                      id: 0, // Placeholder, the actual ID will be generated in TaskController
                       title: titleController.text,
                       description: descriptionController.text,
                       category: categoryController.text,
-                      status: '',
+                      status: 'Pending', // Default status
                     );
-                    controller.addTask(task);
+                    controller.addTask(task); // Add task without ID
                     Get.back();
                   }
                 },
-                child: const Text('Add Task'),
-              ),
+                buttonWidth: 150,
+                bgButtonColor: Colors.blue,
+                text: 'Add Task',
+              )
             ],
           ),
         ),
