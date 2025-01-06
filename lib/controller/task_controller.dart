@@ -51,7 +51,7 @@ class TaskController extends GetxController {
 
     await taskBox.put(newTask.id, newTask); // Store in Hive using the unique ID
     taskList.add(newTask); // Add the new task to the list
-    filteredTasks.add(newTask); // Update the filtered tasks
+   // filteredTasks.add(newTask); // Update the filtered tasks
     print(taskList);
   }
 
